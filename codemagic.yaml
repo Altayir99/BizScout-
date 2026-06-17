@@ -1,0 +1,57 @@
+workflows:
+  ios-release:
+    name: BizScout iOS — TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      groups:
+        - app_store_credentials   # APP_STORE_CONNECT_ISSUER_ID, KEY_ID, PRIVATE_KEY
+        - certificate_credentials # CERTIFICATE_PRIVATE_KEY
+      vars:
+        BUNDLE_ID: "com.app.bizscout"
+        APP_STORE_APP_ID: "PLACEHOLDER_APP_ID"  # Fill after App Store Connect registration
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+
+    scripts:
+      - name: Set up code signing identities
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates
+          xcode-project use-profiles
+
+      - name: Flutter pub get
+        script: flutter pub get
+
+      - name: Flutter build iOS (no codesign)
+        script: |
+          flutter build ios --release --no-codesign
+
+      - name: Xcode archive & export
+        script: |
+          xcode-project build-ipa \
+            --workspace ios/Runner.xcworkspace \
+            --scheme Runner
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        expire_build_days: 20

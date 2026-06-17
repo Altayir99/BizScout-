@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'core/di/injection.dart';
 import 'core/theme/app_theme.dart';
+import 'core/providers/navigation_provider.dart';
 import 'features/chat/presentation/providers/chat_provider.dart';
 import 'features/search/presentation/providers/search_provider.dart';
 import 'features/sessions/presentation/providers/sessions_provider.dart';
@@ -27,6 +28,7 @@ class BizScoutApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GetIt.I<SearchProvider>()),
         ChangeNotifierProvider(create: (_) => GetIt.I<ChatProvider>()),
         ChangeNotifierProvider(create: (_) => GetIt.I<SessionsProvider>()),
+        ChangeNotifierProvider(create: (_) => NavigationProvider()),
       ],
       child: MaterialApp(
         title: 'BizScout',

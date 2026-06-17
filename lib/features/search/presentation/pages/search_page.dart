@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/providers/navigation_provider.dart';
+import '../../../chat/presentation/providers/chat_provider.dart';
 import '../providers/search_provider.dart';
 
 class SearchPage extends StatefulWidget {
@@ -208,6 +211,36 @@ class _SearchPageState extends State<SearchPage> {
               textAlign: TextAlign.center),
           const SizedBox(height: 12),
         ],
+
+        // ── "Im Chat besprechen" button ───────────────────────────────────
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () async {
+              HapticFeedback.lightImpact();
+              final chatProvider = context.read<ChatProvider>();
+              final nav = context.read<NavigationProvider>();
+              await chatProvider.seedFromSearch(
+                _controller.text.trim(),
+                p.result!.answer,
+              );
+              nav.goToChat();
+            },
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.accent,
+              side: BorderSide(color: AppColors.accent.withOpacity(0.5)),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+            label: const Text(
+              'Im Chat besprechen',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
 
         // ── Search result card ────────────────────────────────────────────
         _ResultCard(answer: p.result!.answer),

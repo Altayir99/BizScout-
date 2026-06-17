@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/chat_message.dart';
 import '../providers/chat_provider.dart';
@@ -107,6 +109,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildEmptyState() {
+    final p = context.read<ChatProvider>();
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -137,7 +140,9 @@ class _ChatPageState extends State<ChatPage> {
               '📊 Gastronomie Trends',
             ].map((hint) => GestureDetector(
               onTap: () {
-                // Provider accessed here for hint tap
+                HapticFeedback.selectionClick();
+                _controller.text = hint;
+                _send(p);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -154,6 +159,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
+
 }
 
 class _MessageBubble extends StatelessWidget {
@@ -206,10 +212,55 @@ class _MessageBubble extends StatelessWidget {
                       ? null
                       : Border.all(color: AppColors.border, width: 0.5),
                 ),
-                child: SelectableText(
-                  message.content,
-                  style: const TextStyle(fontSize: 15, height: 1.55),
-                ),
+                child: isUser
+                    ? SelectableText(
+                        message.content,
+                        style: const TextStyle(fontSize: 15, height: 1.55),
+                      )
+                    : MarkdownBody(
+                        data: message.content,
+                        styleSheet: MarkdownStyleSheet(
+                          p: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 15,
+                              height: 1.6),
+                          h1: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 19,
+                              fontWeight: FontWeight.w700),
+                          h2: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600),
+                          h3: TextStyle(
+                              color: AppColors.accent,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600),
+                          strong: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w700),
+                          em: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontStyle: FontStyle.italic),
+                          listBullet: TextStyle(
+                              color: AppColors.accent, fontSize: 15),
+                          code: TextStyle(
+                              color: AppColors.accent,
+                              backgroundColor: AppColors.surfaceLight,
+                              fontSize: 13),
+                          blockquoteDecoration: BoxDecoration(
+                            border: Border(left:
+                                BorderSide(color: AppColors.accent, width: 3)),
+                            color: AppColors.surfaceLight,
+                          ),
+                        ),
+                        onTapLink: (_, href, __) async {
+                          if (href != null) {
+                            final uri = Uri.parse(href);
+                            if (await canLaunchUrl(uri)) launchUrl(uri);
+                          }
+                        },
+                      ),
               ),
             ),
           ),

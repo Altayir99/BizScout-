@@ -49,4 +49,14 @@ class ChatProvider extends ChangeNotifier {
   void resumeSession(String sessionId, List<ChatMessage> history) {
     loadSession(sessionId, history);
   }
+
+  /// Called from SearchPage — seeds a new chat with search context and sends first message.
+  Future<void> seedFromSearch(String query, String searchSummary) async {
+    newChat();
+    final contextMessage =
+        'Ich habe gerade nach folgendem gesucht: "$query"\n\n'
+        'Hier sind die aktuellen Ergebnisse:\n\n$searchSummary\n\n'
+        'Bitte analysiere diese Informationen für mich und gib mir konkrete Handlungsempfehlungen.';
+    await send(contextMessage);
+  }
 }

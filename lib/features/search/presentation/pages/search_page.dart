@@ -47,7 +47,7 @@ class _SearchPageState extends State<SearchPage> {
       ),
       body: Column(
         children: [
-          // Mode selector chips
+          // Mode chips
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: SingleChildScrollView(
@@ -85,10 +85,10 @@ class _SearchPageState extends State<SearchPage> {
                     textInputAction: TextInputAction.search,
                     onSubmitted: (_) => _search(p),
                     decoration: InputDecoration(
-                      hintText: p.modes.firstWhere(
-                          (m) => m['key'] == p.selectedMode)['hint'],
-                      prefixIcon: Icon(Icons.search_rounded,
-                          color: AppColors.textMuted),
+                      hintText: p.modes
+                          .firstWhere((m) => m['key'] == p.selectedMode)['hint'],
+                      prefixIcon:
+                          Icon(Icons.search_rounded, color: AppColors.textMuted),
                     ),
                   ),
                 ),
@@ -98,8 +98,7 @@ class _SearchPageState extends State<SearchPage> {
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.accent,
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
@@ -114,7 +113,6 @@ class _SearchPageState extends State<SearchPage> {
               ],
             ),
           ),
-          // Results
           Expanded(child: _buildResults(p)),
         ],
       ),
@@ -135,7 +133,6 @@ class _SearchPageState extends State<SearchPage> {
         ),
       );
     }
-
     if (p.error != null) {
       return Center(
         child: Padding(
@@ -143,8 +140,7 @@ class _SearchPageState extends State<SearchPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline_rounded,
-                  size: 48, color: AppColors.error),
+              Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
               const SizedBox(height: 12),
               Text(p.error!,
                   style: TextStyle(color: AppColors.error),
@@ -154,14 +150,12 @@ class _SearchPageState extends State<SearchPage> {
         ),
       );
     }
-
     if (p.result == null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.travel_explore_rounded,
-                size: 64, color: AppColors.textMuted),
+            Icon(Icons.travel_explore_rounded, size: 64, color: AppColors.textMuted),
             const SizedBox(height: 16),
             Text('Wähle einen Modus und suche',
                 style: TextStyle(color: AppColors.textMuted)),
@@ -170,113 +164,56 @@ class _SearchPageState extends State<SearchPage> {
       );
     }
 
-    final result = p.result!;
-
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
       children: [
-        // Answer card with markdown rendering
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.surfaceLight, width: 1),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.auto_awesome_rounded,
-                      size: 16, color: AppColors.accent),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Ergebnis',
-                    style: TextStyle(
-                      color: AppColors.accent,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              MarkdownBody(
-                data: result.answer,
-                styleSheet: MarkdownStyleSheet(
-                  p: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 15,
-                    height: 1.65,
-                  ),
-                  h1: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    height: 1.4,
-                  ),
-                  h2: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                  ),
-                  h3: TextStyle(
-                    color: AppColors.accent,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  strong: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  em: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontStyle: FontStyle.italic,
-                  ),
-                  listBullet: TextStyle(
-                    color: AppColors.accent,
-                    fontSize: 15,
-                  ),
-                  blockquote: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                  ),
-                  blockquoteDecoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide(color: AppColors.accent, width: 3),
-                    ),
-                    color: AppColors.surfaceLight,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  code: TextStyle(
-                    color: AppColors.accent,
-                    backgroundColor: AppColors.surfaceLight,
-                    fontSize: 13,
-                  ),
-                  horizontalRuleDecoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(
-                          color: AppColors.surfaceLight, width: 1.5),
-                    ),
-                  ),
-                ),
-                onTapLink: (text, href, title) async {
-                  if (href != null) {
-                    final uri = Uri.parse(href);
-                    if (await canLaunchUrl(uri)) launchUrl(uri);
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
+        // ── KI Analysis card ─────────────────────────────────────────────
+        if (p.researchResult != null) ...[
+          _AnalysisCard(analysis: p.researchResult!.aiAnalysis),
+          const SizedBox(height: 16),
+        ],
 
-        // Sources
-        if (result.sources.isNotEmpty) ...[
+        // ── "Analysiere mit KI" button ────────────────────────────────────
+        if (p.researchResult == null) ...[
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: p.isResearching ? null : () => p.analyze(),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: p.isResearching
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.black))
+                  : const Icon(Icons.auto_awesome_rounded, size: 18),
+              label: Text(
+                p.isResearching ? 'KI analysiert…' : 'Analysiere mit KI',
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+
+        if (p.researchError != null) ...[
+          Text(p.researchError!,
+              style: TextStyle(color: AppColors.error, fontSize: 13),
+              textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+        ],
+
+        // ── Search result card ────────────────────────────────────────────
+        _ResultCard(answer: p.result!.answer),
+
+        // ── Sources ───────────────────────────────────────────────────────
+        if (p.result!.sources.isNotEmpty) ...[
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.only(left: 4, bottom: 8),
@@ -290,12 +227,145 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
           ),
-          ...result.sources.asMap().entries.map((e) => _SourceTile(
-                index: e.key + 1,
-                url: e.value,
-              )),
+          ...p.result!.sources.asMap().entries
+              .map((e) => _SourceTile(index: e.key + 1, url: e.value)),
         ],
       ],
+    );
+  }
+}
+
+// ── Shared markdown style ────────────────────────────────────────────────────
+
+MarkdownStyleSheet _mdStyle() => MarkdownStyleSheet(
+      p: TextStyle(color: AppColors.textPrimary, fontSize: 15, height: 1.65),
+      h1: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          height: 1.4),
+      h2: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 17,
+          fontWeight: FontWeight.w600,
+          height: 1.4),
+      h3: TextStyle(
+          color: AppColors.accent, fontSize: 15, fontWeight: FontWeight.w600),
+      strong:
+          TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w700),
+      em: TextStyle(
+          color: AppColors.textSecondary, fontStyle: FontStyle.italic),
+      listBullet: TextStyle(color: AppColors.accent, fontSize: 15),
+      blockquote: TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 14,
+          fontStyle: FontStyle.italic),
+      blockquoteDecoration: BoxDecoration(
+        border: Border(left: BorderSide(color: AppColors.accent, width: 3)),
+        color: AppColors.surfaceLight,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      code: TextStyle(
+          color: AppColors.accent,
+          backgroundColor: AppColors.surfaceLight,
+          fontSize: 13),
+    );
+
+// ── Widgets ──────────────────────────────────────────────────────────────────
+
+class _ResultCard extends StatelessWidget {
+  final String answer;
+  const _ResultCard({required this.answer});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.surfaceLight, width: 1),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.travel_explore_rounded, size: 16, color: AppColors.accent),
+              const SizedBox(width: 6),
+              Text('SUCHERGEBNIS',
+                  style: TextStyle(
+                      color: AppColors.accent,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.0)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          MarkdownBody(
+            data: answer,
+            styleSheet: _mdStyle(),
+            onTapLink: (_, href, __) async {
+              if (href != null) {
+                final uri = Uri.parse(href);
+                if (await canLaunchUrl(uri)) launchUrl(uri);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AnalysisCard extends StatelessWidget {
+  final String analysis;
+  const _AnalysisCard({required this.analysis});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.accent.withOpacity(0.15),
+            AppColors.accent.withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accent.withOpacity(0.4), width: 1),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.auto_awesome_rounded, size: 16, color: AppColors.accent),
+              const SizedBox(width: 6),
+              Text('KI-ANALYSE',
+                  style: TextStyle(
+                      color: AppColors.accent,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.0)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          MarkdownBody(
+            data: analysis,
+            styleSheet: _mdStyle(),
+            onTapLink: (_, href, __) async {
+              if (href != null) {
+                final uri = Uri.parse(href);
+                if (await canLaunchUrl(uri)) launchUrl(uri);
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -303,7 +373,6 @@ class _SearchPageState extends State<SearchPage> {
 class _SourceTile extends StatelessWidget {
   final int index;
   final String url;
-
   const _SourceTile({required this.index, required this.url});
 
   String _domain(String url) {
@@ -339,30 +408,22 @@ class _SourceTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Center(
-                child: Text(
-                  '$index',
-                  style: TextStyle(
-                    color: AppColors.accent,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+                child: Text('$index',
+                    style: TextStyle(
+                        color: AppColors.accent,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700)),
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(
-                _domain(url),
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              child: Text(_domain(url),
+                  style:
+                      TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis),
             ),
-            Icon(Icons.open_in_new_rounded,
-                size: 14, color: AppColors.textMuted),
+            Icon(Icons.open_in_new_rounded, size: 14, color: AppColors.textMuted),
           ],
         ),
       ),

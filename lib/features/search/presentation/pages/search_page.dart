@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/navigation_provider.dart';
@@ -116,7 +117,82 @@ class _SearchPageState extends State<SearchPage> {
               ],
             ),
           ),
+          // Recent searches (shown when idle, no results)
+          if (p.result == null && !p.isLoading)
+            _buildRecentChips(p),
           Expanded(child: _buildResults(p)),
+        ],
+      ),
+    );
+  }
+
+  /// Recent searches shown as horizontal chips above results when idle
+  Widget _buildRecentChips(SearchProvider p) {
+    if (p.recentSearches.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text('Zuletzt gesucht',
+                  style: TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.8)),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => p.clearHistory(),
+                child: Text('Löschen',
+                    style: TextStyle(
+                        color: AppColors.accent,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: p.recentSearches.map((q) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      _controller.text = q;
+                      _search(p);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceLight,
+                        borderRadius: BorderRadius.circular(20),
+                        border:
+                            Border.all(color: AppColors.border, width: 0.5),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.history_rounded,
+                              size: 13, color: AppColors.textMuted),
+                          const SizedBox(width: 5),
+                          Text(q,
+                              style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 13)),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
         ],
       ),
     );
@@ -332,6 +408,37 @@ class _ResultCard extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.0)),
+              const Spacer(),
+              // Copy button
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Clipboard.setData(ClipboardData(text: answer));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Kopiert'),
+                      duration: Duration(seconds: 1),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Icon(Icons.copy_rounded, size: 16, color: AppColors.textMuted),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Share button
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Share.share(answer, subject: 'BizScout Suchergebnis');
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Icon(Icons.ios_share_rounded, size: 16, color: AppColors.textMuted),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),

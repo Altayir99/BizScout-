@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/providers/navigation_provider.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
 import '../../data/models/chat_session.dart';
 import '../providers/sessions_provider.dart';
@@ -428,13 +429,15 @@ class _SessionDetailSheet extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
-                      // Switch to chat tab and resume session
+                      // Resume session in chat
                       context.read<ChatProvider>().resumeSession(
                             session.id,
                             context
                                 .read<SessionsProvider>()
                                 .sessionMessages,
                           );
+                      // Switch to Chat tab
+                      context.read<NavigationProvider>().goToChat();
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(

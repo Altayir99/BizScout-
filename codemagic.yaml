@@ -13,7 +13,7 @@ workflows:
         - certificate_credentials # CERTIFICATE_PRIVATE_KEY
       vars:
         BUNDLE_ID: "com.app.bizscout"
-        APP_STORE_APP_ID: "PLACEHOLDER_APP_ID"  # Fill after App Store Connect registration
+        APP_STORE_APP_ID: "6781390353"
 
     triggering:
       events:

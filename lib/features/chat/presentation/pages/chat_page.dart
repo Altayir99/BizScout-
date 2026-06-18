@@ -60,6 +60,14 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                color: AppColors.textPrimary,
+                tooltip: 'Zurück',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: Column(
           children: [
             Text('KI-Assistent',

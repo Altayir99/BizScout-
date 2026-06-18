@@ -36,6 +36,8 @@ class LayoutPage extends StatelessWidget {
         child: BottomNavigationBar(
           currentIndex: nav.currentIndex,
           onTap: (i) {
+            // Dismiss keyboard on every tab switch
+            FocusScope.of(context).unfocus();
             context.read<NavigationProvider>().goTo(i);
             // Auto-refresh sessions whenever the Verlauf tab is tapped
             if (i == 2) {

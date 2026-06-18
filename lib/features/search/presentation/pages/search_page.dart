@@ -73,7 +73,10 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ],
       ),
-      body: Column(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: Column(
         children: [
           // Mode chips
           Padding(
@@ -183,6 +186,7 @@ class _SearchPageState extends State<SearchPage> {
             _buildRecentChips(p),
           Expanded(child: _buildResults(p)),
         ],
+      ),
       ),
     );
   }

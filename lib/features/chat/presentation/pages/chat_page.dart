@@ -34,6 +34,7 @@ class _ChatPageState extends State<ChatPage> {
     final text = _controller.text.trim();
     if (text.isEmpty || p.isTyping) return;
     _controller.clear();
+    _focusNode.unfocus();
     p.send(text);
     _scrollToBottom();
   }
@@ -107,7 +108,10 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ],
       ),
-      body: Column(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: Column(
         children: [
           // Message list
           Expanded(
@@ -137,12 +141,13 @@ class _ChatPageState extends State<ChatPage> {
                   style: TextStyle(color: AppColors.error, fontSize: 13)),
             ),
           // Input bar
-          _InputBar(
+          _ChatInputBar(
               controller: _controller,
               focusNode: _focusNode,
               onSend: () => _send(p),
               isTyping: p.isTyping),
         ],
+      ),
       ),
     );
   }
@@ -509,13 +514,13 @@ class _TypingBubbleState extends State<_TypingBubble>
   }
 }
 
-class _InputBar extends StatelessWidget {
+class _ChatInputBar extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback onSend;
   final bool isTyping;
 
-  const _InputBar({
+  const _ChatInputBar({
     required this.controller,
     required this.focusNode,
     required this.onSend,
@@ -546,7 +551,8 @@ class _InputBar extends StatelessWidget {
               focusNode: focusNode,
               maxLines: 4,
               minLines: 1,
-              textInputAction: TextInputAction.newline,
+              textInputAction: TextInputAction.send,
+              onSubmitted: (_) => onSend(),
               style: const TextStyle(
                   color: AppColors.textPrimary, fontSize: 15),
               decoration: InputDecoration(

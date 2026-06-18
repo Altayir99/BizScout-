@@ -3,13 +3,16 @@ import '../../data/models/search_result.dart';
 import '../../data/models/research_result.dart';
 import '../../data/repositories/search_repository.dart';
 import '../../../../core/services/search_history_service.dart';
+import '../../../../core/services/mode_usage_service.dart';
 
 class SearchProvider extends ChangeNotifier {
   final SearchRepository _repo;
   final _history = SearchHistoryService();
+  final _modeUsage = ModeUsageService();
 
   SearchProvider(this._repo) {
     _loadHistory();
+    _loadModeCounts();
   }
 
   SearchResult? result;
@@ -22,6 +25,7 @@ class SearchProvider extends ChangeNotifier {
   String _lastQuery = '';
 
   List<String> recentSearches = [];
+  Map<String, int> modeCounts = {};
 
   final modes = [
     {'key': 'restaurants', 'label': '🍽️ Gastronomie',   'hint': 'z.B. Neue Restaurants Berlin 2025'},
@@ -37,6 +41,11 @@ class SearchProvider extends ChangeNotifier {
 
   Future<void> _loadHistory() async {
     recentSearches = await _history.load();
+    notifyListeners();
+  }
+
+  Future<void> _loadModeCounts() async {
+    modeCounts = await _modeUsage.getCounts();
     notifyListeners();
   }
 
@@ -56,7 +65,9 @@ class SearchProvider extends ChangeNotifier {
     try {
       result = await _repo.search(_lastQuery, selectedMode);
       await _history.add(_lastQuery);
+      await _modeUsage.track(selectedMode);
       recentSearches = await _history.load();
+      modeCounts = await _modeUsage.getCounts();
     } catch (e) {
       error = 'Fehler bei der Suche. Bitte versuche es erneut.';
     } finally {
@@ -95,3 +106,4 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+

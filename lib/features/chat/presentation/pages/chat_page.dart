@@ -149,70 +149,163 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildEmptyState() {
     final p = context.read<ChatProvider>();
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: AppColors.accentSubtle,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(Icons.auto_awesome_rounded,
-                  size: 32, color: AppColors.accent),
+
+    const quickHints = [
+      '🍽️ Beste Restaurants Berlin',
+      '📅 Events diese Woche',
+      '👨‍🍳 Koch gesucht Berlin',
+      '📊 Gastronomie Trends',
+    ];
+
+    const skills = [
+      {
+        'icon': '📄',
+        'label': 'Bericht erstellen',
+        'prompt': 'Erstelle einen Bericht über den aktuellen Gastronomie-Markt in Berlin 2025',
+      },
+      {
+        'icon': '📊',
+        'label': 'Vergleich',
+        'prompt': 'Vergleiche die Vor- und Nachteile von Zeitarbeit vs. Festanstellung in der Gastronomie',
+      },
+      {
+        'icon': '📧',
+        'label': 'Angebot schreiben',
+        'prompt': 'Schreibe ein professionelles Angebot für Servicepersonal an ein Hotel in Berlin',
+      },
+      {
+        'icon': '📋',
+        'label': 'Checkliste',
+        'prompt': 'Erstelle eine Checkliste für die Akquise eines neuen Großkunden im Eventbereich',
+      },
+      {
+        'icon': '📈',
+        'label': 'Markteinschätzung',
+        'prompt': 'Gib mir eine aktuelle Markteinschätzung für die Zeitarbeitsbranche in Berlin',
+      },
+    ];
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 40),
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: AppColors.accentSubtle,
+              borderRadius: BorderRadius.circular(20),
             ),
-            const SizedBox(height: 20),
-            Text('BizScout Assistent',
-                style: GoogleFonts.sourceSerif4(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                )),
-            const SizedBox(height: 8),
-            Text(
-              'Frag mich über Gastronomie, Events\noder Zeitarbeit in Berlin',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.5),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 28),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              alignment: WrapAlignment.center,
-              children: [
-                '🍽️ Beste Restaurants Berlin',
-                '📅 Events diese Woche',
-                '👨‍🍳 Koch gesucht Berlin',
-                '📊 Gastronomie Trends',
-              ]
-                  .map((hint) => GestureDetector(
-                        onTap: () {
-                          HapticFeedback.selectionClick();
-                          _controller.text = hint;
-                          _send(p);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: Text(hint,
-                              style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 13)),
+            child: Icon(Icons.auto_awesome_rounded,
+                size: 32, color: AppColors.accent),
+          ),
+          const SizedBox(height: 20),
+          Text('BizScout Assistent',
+              style: GoogleFonts.sourceSerif4(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              )),
+          const SizedBox(height: 8),
+          Text(
+            'Frag mich über Gastronomie, Events\noder Zeitarbeit in Berlin',
+            style: TextStyle(
+                color: AppColors.textSecondary, fontSize: 14, height: 1.5),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 28),
+
+          // Quick suggestions
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.center,
+            children: quickHints
+                .map((hint) => GestureDetector(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        _controller.text = hint;
+                        _send(p);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.border),
                         ),
-                      ))
-                  .toList(),
+                        child: Text(hint,
+                            style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 13)),
+                      ),
+                    ))
+                .toList(),
+          ),
+
+          const SizedBox(height: 28),
+
+          // Skills section
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 12),
+              child: Row(
+                children: [
+                  Icon(Icons.bolt_rounded, size: 14, color: AppColors.accent),
+                  const SizedBox(width: 4),
+                  Text('SKILLS',
+                      style: TextStyle(
+                        color: AppColors.accent,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      )),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+          ...skills.map((skill) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    _controller.text = skill['prompt']!;
+                    _send(p);
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(skill['icon']!, style: const TextStyle(fontSize: 20)),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(skill['label']!,
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              )),
+                        ),
+                        Icon(Icons.arrow_forward_ios_rounded,
+                            size: 14, color: AppColors.textMuted),
+                      ],
+                    ),
+                  ),
+                ),
+              )),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }

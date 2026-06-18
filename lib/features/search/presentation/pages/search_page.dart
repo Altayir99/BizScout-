@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/services/export_service.dart';
+import '../../../../core/widgets/insight_charts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/navigation_provider.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
@@ -428,6 +429,14 @@ class _SearchPageState extends State<SearchPage> {
           ),
           ...p.result!.sources.asMap().entries
               .map((e) => _SourceTile(index: e.key + 1, url: e.value)),
+        ],
+
+        // ── Insight Charts ─────────────────────────────────────────────────
+        const SizedBox(height: 20),
+        SourceDomainChart(sources: p.result!.sources),
+        if (p.modeCounts.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          ModeUsagePieChart(modeCounts: p.modeCounts),
         ],
       ],
     );

@@ -61,7 +61,8 @@ class SourceDomainChart extends StatelessWidget {
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
-                    tooltipRoundedRadius: 8,
+                    tooltipBorderRadius: BorderRadius.circular(8),
+                    getTooltipColor: (_) => const Color(0xFF2C2C2A),
                     getTooltipItem: (group, gI, rod, rI) {
                       return BarTooltipItem(
                         '${top[group.x.toInt()].key}\n${rod.toY.toInt()}×',

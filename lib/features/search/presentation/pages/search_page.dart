@@ -387,15 +387,16 @@ class _SearchPageState extends State<SearchPage> {
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
-            onPressed: () async {
+            onPressed: () {
               HapticFeedback.lightImpact();
               final chatProvider = context.read<ChatProvider>();
               final nav = context.read<NavigationProvider>();
-              await chatProvider.seedFromSearch(
+              // Switch to chat tab IMMEDIATELY — don't wait for API
+              nav.goToChat();
+              chatProvider.seedFromSearch(
                 _controller.text.trim(),
                 p.result!.answer,
               );
-              nav.goToChat();
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.accent,

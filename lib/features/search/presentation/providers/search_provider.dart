@@ -24,10 +24,16 @@ class SearchProvider extends ChangeNotifier {
   List<String> recentSearches = [];
 
   final modes = [
-    {'key': 'restaurants', 'label': '🍽️ Restaurants', 'hint': 'z.B. Beste Restaurants Berlin 2025'},
-    {'key': 'events', 'label': '📅 Events', 'hint': 'z.B. Großveranstaltungen Berlin Juni'},
-    {'key': 'general', 'label': '🔍 Allgemein', 'hint': 'z.B. Gastronomie Trends Berlin'},
+    {'key': 'restaurants', 'label': '🍽️ Gastronomie',   'hint': 'z.B. Neue Restaurants Berlin 2025'},
+    {'key': 'events',      'label': '📅 Events',          'hint': 'z.B. Großveranstaltungen Berlin Juni'},
+    {'key': 'hotels',      'label': '🏨 Hotels',          'hint': 'z.B. Luxushotels Berlin Neueröffnungen'},
+    {'key': 'messen',      'label': '🎪 Messen & Kongresse','hint': 'z.B. Messen Berlin 2025 Personalbedarf'},
+    {'key': 'zeitarbeit',  'label': '👔 Zeitarbeit',      'hint': 'z.B. Zeitarbeitsmarkt Berlin Gastronomie'},
+    {'key': 'akquise',     'label': '💼 B2B Akquise',     'hint': 'z.B. Catering Auftraggeber Berlin'},
+    {'key': 'markt',       'label': '📊 Marktanalyse',    'hint': 'z.B. Gastronomie Trends Berlin 2025'},
+    {'key': 'general',     'label': '🔍 Allgemein',       'hint': 'Beliebige Business-Anfrage...'},
   ];
+
 
   Future<void> _loadHistory() async {
     recentSearches = await _history.load();

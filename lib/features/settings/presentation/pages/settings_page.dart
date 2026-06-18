@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../search/presentation/providers/search_provider.dart';
@@ -39,7 +40,7 @@ class _SettingsPageState extends State<SettingsPage> {
       if (resp.statusCode == 200) {
         setState(() {
           _apiStatus = 'Online ✓';
-          _apiStatusColor = const Color(0xFF4CAF50);
+          _apiStatusColor = AppColors.success;
         });
       } else {
         setState(() {
@@ -60,34 +61,44 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Einstellungen'),
+        title: Text('Einstellungen',
+            style: GoogleFonts.sourceSerif4(
+              fontSize: 19,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            )),
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded),
+          icon: const Icon(Icons.close_rounded, size: 22),
           onPressed: () => Navigator.pop(context),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: AppColors.border),
         ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // ── App Info ──────────────────────────────────────────────────────
-          _SectionHeader(title: 'App'),
+          const _SectionHeader(title: 'App'),
           _InfoCard(
             children: [
               _InfoRow(
                 icon: Icons.travel_explore_rounded,
                 label: 'BizScout',
-                value: 'Version 1.0.0',
+                value: 'Version 1.0.1',
                 iconColor: AppColors.accent,
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Container(height: 1, color: AppColors.border),
               _InfoRow(
                 icon: Icons.business_rounded,
                 label: 'Unternehmen',
                 value: 'Gastronomie & Zeitarbeit Berlin',
                 iconColor: AppColors.accent,
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Container(height: 1, color: AppColors.border),
               _InfoRow(
                 icon: Icons.dns_rounded,
                 label: 'API',
@@ -100,7 +111,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 20),
 
           // ── API Status ────────────────────────────────────────────────────
-          _SectionHeader(title: 'Server-Status'),
+          const _SectionHeader(title: 'Server-Status'),
           _InfoCard(
             children: [
               Padding(
@@ -111,7 +122,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
-                        color: _apiStatusColor.withOpacity(0.15),
+                        color: _apiStatusColor.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
@@ -127,8 +138,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Backend API',
-                              style: const TextStyle(
+                          const Text('Backend API',
+                              style: TextStyle(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14)),
@@ -140,7 +151,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     if (_checking)
-                      const SizedBox(
+                      SizedBox(
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
@@ -153,11 +164,11 @@ class _SettingsPageState extends State<SettingsPage> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceLight,
+                            color: AppColors.surfaceSecondary,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: AppColors.border),
                           ),
-                          child: const Text('Prüfen',
+                          child: Text('Prüfen',
                               style: TextStyle(
                                   color: AppColors.accent,
                                   fontSize: 12,
@@ -173,7 +184,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 20),
 
           // ── Daten verwalten ───────────────────────────────────────────────
-          _SectionHeader(title: 'Daten'),
+          const _SectionHeader(title: 'Daten'),
           _InfoCard(
             children: [
               _ActionRow(
@@ -188,17 +199,16 @@ class _SettingsPageState extends State<SettingsPage> {
                       const SnackBar(
                         content: Text('Suchverlauf gelöscht'),
                         duration: Duration(seconds: 2),
-                        behavior: SnackBarBehavior.floating,
                       ),
                     );
                   }
                 },
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Container(height: 1, color: AppColors.border),
               _ActionRow(
                 icon: Icons.delete_outline_rounded,
                 label: 'Alle Sitzungen löschen',
-                iconColor: Colors.redAccent,
+                iconColor: AppColors.error,
                 onTap: () => _confirmDeleteAll(context),
               ),
             ],
@@ -207,7 +217,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 20),
 
           // ── KI-Modelle ────────────────────────────────────────────────────
-          _SectionHeader(title: 'KI-Modelle'),
+          const _SectionHeader(title: 'KI-Modelle'),
           _InfoCard(
             children: [
               _InfoRow(
@@ -216,7 +226,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 value: 'Claude Sonnet 4.5',
                 iconColor: AppColors.accent,
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Container(height: 1, color: AppColors.border),
               _InfoRow(
                 icon: Icons.travel_explore_rounded,
                 label: 'Live-Suche',
@@ -226,7 +236,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 40),
 
           Center(
             child: Text(
@@ -248,17 +258,13 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Alle Sitzungen löschen?',
-            style: TextStyle(color: AppColors.textPrimary)),
+        title: const Text('Alle Sitzungen löschen?'),
         content: const Text(
-            'Alle gespeicherten Gespräche werden unwiderruflich gelöscht.',
-            style: TextStyle(color: AppColors.textSecondary)),
+            'Alle gespeicherten Gespräche werden unwiderruflich gelöscht.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Abbrechen',
+            child: Text('Abbrechen',
                 style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
@@ -273,13 +279,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Alle Sitzungen gelöscht'),
-                    behavior: SnackBarBehavior.floating,
                   ),
                 );
               }
             },
-            child: const Text('Löschen',
-                style: TextStyle(color: Colors.redAccent)),
+            child: Text('Löschen',
+                style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -321,8 +326,18 @@ class _InfoCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.border),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x06000000),
+            blurRadius: 12,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
-      child: Column(children: children),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: Column(children: children),
+      ),
     );
   }
 }
@@ -350,7 +365,9 @@ class _InfoRow extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.12),
+              color: iconColor == AppColors.textMuted
+                  ? AppColors.surfaceSecondary
+                  : AppColors.accentSubtle,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: iconColor, size: 17),
@@ -363,9 +380,13 @@ class _InfoRow extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w500)),
           ),
-          Text(value,
-              style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 13)),
+          Flexible(
+            child: Text(value,
+                style: const TextStyle(
+                    color: AppColors.textSecondary, fontSize: 13),
+                textAlign: TextAlign.end,
+                overflow: TextOverflow.ellipsis),
+          ),
         ],
       ),
     );
@@ -389,6 +410,7 @@ class _ActionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         child: Row(
@@ -397,7 +419,9 @@ class _ActionRow extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.12),
+                color: iconColor == AppColors.error
+                    ? AppColors.error.withOpacity(0.06)
+                    : AppColors.surfaceSecondary,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: iconColor, size: 17),
@@ -406,8 +430,8 @@ class _ActionRow extends StatelessWidget {
             Expanded(
               child: Text(label,
                   style: TextStyle(
-                      color: iconColor == Colors.redAccent
-                          ? Colors.redAccent
+                      color: iconColor == AppColors.error
+                          ? AppColors.error
                           : AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500)),

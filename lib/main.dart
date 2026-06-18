@@ -14,6 +14,11 @@ import 'app/layout_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
+  ));
   setupDependencies();
   runApp(const BizScoutApp());
 }
@@ -33,7 +38,7 @@ class BizScoutApp extends StatelessWidget {
       child: MaterialApp(
         title: 'BizScout',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark(),
+        theme: AppTheme.light(),
         home: const LayoutPage(),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/navigation_provider.dart';
@@ -48,7 +49,7 @@ class _SessionsPageState extends State<SessionsPage>
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.surface,
         border: Border(
           bottom: BorderSide(color: AppColors.border, width: 1),
@@ -60,29 +61,26 @@ class _SessionsPageState extends State<SessionsPage>
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.gold, AppColors.gold.withOpacity(0.6)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: AppColors.accentSubtle,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.history_rounded, color: Colors.black, size: 20),
+            child: const Icon(Icons.history_rounded,
+                color: AppColors.accent, size: 20),
           ),
           const SizedBox(width: 12),
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Verlauf',
-                style: TextStyle(
+                style: GoogleFonts.sourceSerif4(
                   color: AppColors.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.3,
                 ),
               ),
-              Text(
+              const Text(
                 'Gespeicherte Gespräche',
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -94,17 +92,17 @@ class _SessionsPageState extends State<SessionsPage>
           const Spacer(),
           Consumer<SessionsProvider>(
             builder: (_, prov, __) => prov.loading
-                ? const SizedBox(
+                ? SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: AppColors.gold,
+                      color: AppColors.accent,
                     ),
                   )
                 : IconButton(
                     icon: const Icon(Icons.refresh_rounded,
-                        color: AppColors.textSecondary, size: 22),
+                        color: AppColors.textMuted, size: 22),
                     onPressed: () =>
                         context.read<SessionsProvider>().loadSessions(),
                   ),
@@ -140,12 +138,12 @@ class _SessionsPageState extends State<SessionsPage>
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: AppColors.surfaceLight,
+              color: AppColors.surfaceSecondary,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Center(
+            child: Center(
               child: CircularProgressIndicator(
-                color: AppColors.gold,
+                color: AppColors.accent,
                 strokeWidth: 2.5,
               ),
             ),
@@ -153,7 +151,7 @@ class _SessionsPageState extends State<SessionsPage>
           const SizedBox(height: 16),
           const Text(
             'Lade Gespräche...',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+            style: TextStyle(color: AppColors.textMuted, fontSize: 14),
           ),
         ],
       ),
@@ -171,7 +169,7 @@ class _SessionsPageState extends State<SessionsPage>
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: AppColors.surfaceLight,
+                color: AppColors.surfaceSecondary,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Icon(
@@ -181,9 +179,9 @@ class _SessionsPageState extends State<SessionsPage>
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Noch keine Gespräche',
-              style: TextStyle(
+              style: GoogleFonts.sourceSerif4(
                 color: AppColors.textPrimary,
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
@@ -212,12 +210,20 @@ class _SessionsPageState extends State<SessionsPage>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded,
-                color: AppColors.textMuted, size: 48),
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(Icons.wifi_off_rounded,
+                  color: AppColors.error, size: 28),
+            ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Verbindungsfehler',
-              style: TextStyle(
+              style: GoogleFonts.sourceSerif4(
                   color: AppColors.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w600),
@@ -239,7 +245,7 @@ class _SessionsPageState extends State<SessionsPage>
 
   Widget _buildSessionList(BuildContext context, SessionsProvider prov) {
     return RefreshIndicator(
-      color: AppColors.gold,
+      color: AppColors.accent,
       backgroundColor: AppColors.surface,
       onRefresh: prov.loadSessions,
       child: ListView.separated(
@@ -268,34 +274,29 @@ class _SessionCard extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.15),
+          color: AppColors.error.withOpacity(0.06),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: const Icon(Icons.delete_outline_rounded,
-            color: Colors.redAccent, size: 24),
+        child: Icon(Icons.delete_outline_rounded,
+            color: AppColors.error, size: 24),
       ),
       confirmDismiss: (_) async {
         return await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            backgroundColor: AppColors.surface,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: const Text('Gespräch löschen?',
-                style: TextStyle(color: AppColors.textPrimary)),
+            title: const Text('Gespräch löschen?'),
             content: const Text(
-                'Dieser Verlauf kann nicht wiederhergestellt werden.',
-                style: TextStyle(color: AppColors.textSecondary)),
+                'Dieser Verlauf kann nicht wiederhergestellt werden.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Abbrechen',
+                child: Text('Abbrechen',
                     style: TextStyle(color: AppColors.textSecondary)),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Löschen',
-                    style: TextStyle(color: Colors.redAccent)),
+                child: Text('Löschen',
+                    style: TextStyle(color: AppColors.error)),
               ),
             ],
           ),
@@ -311,6 +312,13 @@ class _SessionCard extends StatelessWidget {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.border),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x06000000),
+                blurRadius: 12,
+                offset: Offset(0, 3),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -319,11 +327,11 @@ class _SessionCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceLight,
+                  color: AppColors.accentSubtle,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.chat_rounded,
-                    color: AppColors.gold, size: 20),
+                    color: AppColors.accent, size: 20),
               ),
               const SizedBox(width: 12),
               // Middle: title + metadata
@@ -357,13 +365,13 @@ class _SessionCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.gold.withOpacity(0.15),
+                              color: AppColors.accentSubtle,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               '${session.messageCount} Msg',
                               style: const TextStyle(
-                                color: AppColors.gold,
+                                color: AppColors.accent,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -375,7 +383,7 @@ class _SessionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded,
+              Icon(Icons.chevron_right_rounded,
                   color: AppColors.textMuted, size: 20),
             ],
           ),
@@ -397,7 +405,9 @@ class _SessionCard extends StatelessWidget {
   String _formatDate(DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inDays == 0) return 'Heute ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}';
+    if (diff.inDays == 0) {
+      return 'Heute ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}';
+    }
     if (diff.inDays == 1) return 'Gestern';
     if (diff.inDays < 7) return 'Vor ${diff.inDays} Tagen';
     return '${dt.day}.${dt.month}.${dt.year}';
@@ -417,9 +427,16 @@ class _SessionDetailSheet extends StatelessWidget {
       maxChildSize: 0.95,
       minChildSize: 0.5,
       builder: (_, controller) => Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x18000000),
+              blurRadius: 24,
+              offset: Offset(0, -8),
+            ),
+          ],
         ),
         child: Column(
           children: [
@@ -429,7 +446,7 @@ class _SessionDetailSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.border,
+                color: AppColors.borderStrong,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -442,9 +459,9 @@ class _SessionDetailSheet extends StatelessWidget {
                   Expanded(
                     child: Text(
                       session.title,
-                      style: const TextStyle(
+                      style: GoogleFonts.sourceSerif4(
                         color: AppColors.textPrimary,
-                        fontSize: 15,
+                        fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
                       maxLines: 2,
@@ -466,17 +483,15 @@ class _SessionDetailSheet extends StatelessWidget {
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+                          horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppColors.gold, Color(0xFFE6A800)],
-                        ),
+                        color: AppColors.accent,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Text(
                         'Fortsetzen',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Colors.white,
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                         ),
@@ -487,21 +502,21 @@ class _SessionDetailSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            const Divider(color: AppColors.border, height: 1),
+            Container(height: 1, color: AppColors.border),
             // Messages
             Expanded(
               child: Consumer<SessionsProvider>(
                 builder: (_, prov, __) {
                   if (prov.messagesLoading) {
-                    return const Center(
+                    return Center(
                         child: CircularProgressIndicator(
-                            color: AppColors.gold, strokeWidth: 2));
+                            color: AppColors.accent, strokeWidth: 2));
                   }
                   if (prov.sessionMessages.isEmpty) {
-                    return const Center(
+                    return Center(
                         child: Text('Keine Nachrichten',
-                            style:
-                                TextStyle(color: AppColors.textSecondary)));
+                            style: TextStyle(
+                                color: AppColors.textSecondary)));
                   }
                   return ListView.builder(
                     controller: controller,
@@ -525,20 +540,19 @@ class _SessionDetailSheet extends StatelessWidget {
                                 const SnackBar(
                                   content: Text('Nachricht kopiert'),
                                   duration: Duration(seconds: 1),
-                                  behavior: SnackBarBehavior.floating,
                                 ),
                               );
                             },
                             child: Container(
                               constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(ctx).size.width * 0.82),
+                                  maxWidth: MediaQuery.of(ctx).size.width *
+                                      0.82),
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 14, vertical: 10),
                               decoration: BoxDecoration(
                                 color: isUser
-                                    ? AppColors.gold.withOpacity(0.15)
-                                    : AppColors.surfaceLight,
+                                    ? AppColors.accentSubtle
+                                    : AppColors.surfaceSecondary,
                                 borderRadius: BorderRadius.only(
                                   topLeft: const Radius.circular(14),
                                   topRight: const Radius.circular(14),
@@ -549,17 +563,18 @@ class _SessionDetailSheet extends StatelessWidget {
                                 ),
                                 border: isUser
                                     ? Border.all(
-                                        color:
-                                            AppColors.gold.withOpacity(0.3))
+                                        color: AppColors.accent
+                                            .withOpacity(0.15))
                                     : null,
                               ),
                               child: isUser
                                   ? Text(
                                       msg.content,
                                       style: const TextStyle(
-                                        color: AppColors.gold,
+                                        color: AppColors.accent,
                                         fontSize: 14,
                                         height: 1.5,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     )
                                   : MarkdownBody(
@@ -573,16 +588,16 @@ class _SessionDetailSheet extends StatelessWidget {
                                             color: AppColors.textPrimary,
                                             fontWeight: FontWeight.w700),
                                         h3: TextStyle(
-                                            color: AppColors.gold,
+                                            color: AppColors.accent,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600),
                                         listBullet: TextStyle(
-                                            color: AppColors.gold,
+                                            color: AppColors.accent,
                                             fontSize: 14),
                                         code: TextStyle(
-                                            color: AppColors.gold,
+                                            color: AppColors.accent,
                                             backgroundColor:
-                                                AppColors.surfaceLight,
+                                                AppColors.surfaceSecondary,
                                             fontSize: 12),
                                       ),
                                     ),

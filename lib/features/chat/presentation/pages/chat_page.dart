@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -57,17 +58,28 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Column(
           children: [
-            const Text('KI-Assistent'),
+            Text('KI-Assistent',
+                style: GoogleFonts.sourceSerif4(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                )),
             if (p.currentSessionId != null)
-              Text('Aktive Sitzung', style: TextStyle(fontSize: 11, color: AppColors.accent)),
+              Text('Aktive Sitzung',
+                  style: TextStyle(fontSize: 11, color: AppColors.accent)),
           ],
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: AppColors.border),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_circle_outline_rounded),
+            icon: const Icon(Icons.add_circle_outline_rounded, size: 22),
             tooltip: 'Neuer Chat',
             onPressed: p.newChat,
           ),
@@ -95,14 +107,19 @@ class _ChatPageState extends State<ChatPage> {
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
+                color: AppColors.error.withOpacity(0.06),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                border: Border.all(color: AppColors.error.withOpacity(0.2)),
               ),
-              child: Text(p.error!, style: TextStyle(color: AppColors.error, fontSize: 13)),
+              child: Text(p.error!,
+                  style: TextStyle(color: AppColors.error, fontSize: 13)),
             ),
           // Input bar
-          _InputBar(controller: _controller, focusNode: _focusNode, onSend: () => _send(p), isTyping: p.isTyping),
+          _InputBar(
+              controller: _controller,
+              focusNode: _focusNode,
+              onSend: () => _send(p),
+              isTyping: p.isTyping),
         ],
       ),
     );
@@ -111,55 +128,72 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildEmptyState() {
     final p = context.read<ChatProvider>();
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 72, height: 72,
-            decoration: BoxDecoration(
-              gradient: RadialGradient(colors: [AppColors.accent.withOpacity(0.2), Colors.transparent]),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.auto_awesome_rounded, size: 36, color: AppColors.accent),
-          ),
-          const SizedBox(height: 16),
-          const Text('BizScout Assistent', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
-          Text(
-            'Frag mich über Gastronomie, Events\noder Zeitarbeit in Berlin',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          Wrap(
-            spacing: 8, runSpacing: 8,
-            children: [
-              '🍽️ Beste Restaurants Berlin',
-              '📅 Events diese Woche',
-              '👨‍🍳 Koch gesucht Berlin',
-              '📊 Gastronomie Trends',
-            ].map((hint) => GestureDetector(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                _controller.text = hint;
-                _send(p);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceLight,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Text(hint, style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.accentSubtle,
+                borderRadius: BorderRadius.circular(20),
               ),
-            )).toList(),
-          ),
-        ],
+              child: Icon(Icons.auto_awesome_rounded,
+                  size: 32, color: AppColors.accent),
+            ),
+            const SizedBox(height: 20),
+            Text('BizScout Assistent',
+                style: GoogleFonts.sourceSerif4(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                )),
+            const SizedBox(height: 8),
+            Text(
+              'Frag mich über Gastronomie, Events\noder Zeitarbeit in Berlin',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.5),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 28),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.center,
+              children: [
+                '🍽️ Beste Restaurants Berlin',
+                '📅 Events diese Woche',
+                '👨‍🍳 Koch gesucht Berlin',
+                '📊 Gastronomie Trends',
+              ]
+                  .map((hint) => GestureDetector(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          _controller.text = hint;
+                          _send(p);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: Text(hint,
+                              style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 13)),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
-
 }
 
 class _MessageBubble extends StatelessWidget {
@@ -173,20 +207,20 @@ class _MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
             Container(
-              width: 32, height: 32,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.accent, AppColors.accentDark],
-                  begin: Alignment.topLeft, end: Alignment.bottomRight,
-                ),
+                color: AppColors.accent,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.auto_awesome_rounded, size: 16, color: Colors.black),
+              child:
+                  const Icon(Icons.auto_awesome_rounded, size: 16, color: Colors.white),
             ),
             const SizedBox(width: 8),
           ],
@@ -195,11 +229,14 @@ class _MessageBubble extends StatelessWidget {
               onLongPress: () {
                 Clipboard.setData(ClipboardData(text: message.content));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kopiert'), duration: Duration(seconds: 1)),
+                  const SnackBar(
+                      content: Text('Kopiert'),
+                      duration: Duration(seconds: 1)),
                 );
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: isUser ? AppColors.bubbleUser : AppColors.bubbleAssistant,
                   borderRadius: BorderRadius.only(
@@ -208,14 +245,21 @@ class _MessageBubble extends StatelessWidget {
                     bottomLeft: Radius.circular(isUser ? 18 : 4),
                     bottomRight: Radius.circular(isUser ? 4 : 18),
                   ),
-                  border: isUser
-                      ? null
-                      : Border.all(color: AppColors.border, width: 0.5),
+                  border: Border.all(
+                    color: isUser
+                        ? AppColors.accent.withOpacity(0.15)
+                        : AppColors.border,
+                    width: 1,
+                  ),
                 ),
                 child: isUser
                     ? SelectableText(
                         message.content,
-                        style: const TextStyle(fontSize: 15, height: 1.55),
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 15,
+                          height: 1.55,
+                        ),
                       )
                     : MarkdownBody(
                         data: message.content,
@@ -224,11 +268,11 @@ class _MessageBubble extends StatelessWidget {
                               color: AppColors.textPrimary,
                               fontSize: 15,
                               height: 1.6),
-                          h1: TextStyle(
+                          h1: GoogleFonts.sourceSerif4(
                               color: AppColors.textPrimary,
                               fontSize: 19,
                               fontWeight: FontWeight.w700),
-                          h2: TextStyle(
+                          h2: GoogleFonts.sourceSerif4(
                               color: AppColors.textPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.w600),
@@ -242,16 +286,17 @@ class _MessageBubble extends StatelessWidget {
                           em: TextStyle(
                               color: AppColors.textSecondary,
                               fontStyle: FontStyle.italic),
-                          listBullet: TextStyle(
-                              color: AppColors.accent, fontSize: 15),
+                          listBullet:
+                              TextStyle(color: AppColors.accent, fontSize: 15),
                           code: TextStyle(
                               color: AppColors.accent,
-                              backgroundColor: AppColors.surfaceLight,
+                              backgroundColor: AppColors.surfaceSecondary,
                               fontSize: 13),
                           blockquoteDecoration: BoxDecoration(
-                            border: Border(left:
-                                BorderSide(color: AppColors.accent, width: 3)),
-                            color: AppColors.surfaceLight,
+                            border: Border(
+                                left: BorderSide(
+                                    color: AppColors.accent, width: 3)),
+                            color: AppColors.accentSubtle,
                           ),
                         ),
                         onTapLink: (_, href, __) async {
@@ -275,13 +320,16 @@ class _TypingBubble extends StatefulWidget {
   State<_TypingBubble> createState() => _TypingBubbleState();
 }
 
-class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderStateMixin {
+class _TypingBubbleState extends State<_TypingBubble>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..repeat();
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 900))
+      ..repeat();
   }
 
   @override
@@ -297,12 +345,14 @@ class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderS
       child: Row(
         children: [
           Container(
-            width: 32, height: 32,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [AppColors.accent, AppColors.accentDark]),
+            width: 32,
+            height: 32,
+            decoration: const BoxDecoration(
+              color: AppColors.accent,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.auto_awesome_rounded, size: 16, color: Colors.black),
+            child: const Icon(Icons.auto_awesome_rounded,
+                size: 16, color: Colors.white),
           ),
           const SizedBox(width: 8),
           Container(
@@ -310,10 +360,12 @@ class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderS
             decoration: BoxDecoration(
               color: AppColors.bubbleAssistant,
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18), topRight: Radius.circular(18),
-                bottomLeft: Radius.circular(4), bottomRight: Radius.circular(18),
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
+                bottomLeft: Radius.circular(4),
+                bottomRight: Radius.circular(18),
               ),
-              border: Border.all(color: AppColors.border, width: 0.5),
+              border: Border.all(color: AppColors.border, width: 1),
             ),
             child: AnimatedBuilder(
               animation: _ctrl,
@@ -321,12 +373,14 @@ class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderS
                 mainAxisSize: MainAxisSize.min,
                 children: List.generate(3, (i) {
                   final delay = i / 3;
-                  final opacity = ((_ctrl.value - delay) % 1.0).clamp(0.0, 1.0);
+                  final opacity =
+                      ((_ctrl.value - delay) % 1.0).clamp(0.0, 1.0);
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2),
-                    width: 7, height: 7,
+                    width: 7,
+                    height: 7,
                     decoration: BoxDecoration(
-                      color: AppColors.accent.withOpacity(0.3 + opacity * 0.7),
+                      color: AppColors.accent.withOpacity(0.2 + opacity * 0.8),
                       shape: BoxShape.circle,
                     ),
                   );
@@ -347,17 +401,27 @@ class _InputBar extends StatelessWidget {
   final bool isTyping;
 
   const _InputBar({
-    required this.controller, required this.focusNode,
-    required this.onSend, required this.isTyping,
+    required this.controller,
+    required this.focusNode,
+    required this.onSend,
+    required this.isTyping,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(16, 8, 16, MediaQuery.of(context).padding.bottom + 8),
-      decoration: BoxDecoration(
+      padding: EdgeInsets.fromLTRB(
+          16, 10, 16, MediaQuery.of(context).padding.bottom + 10),
+      decoration: const BoxDecoration(
         color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
+        border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x06000000),
+            blurRadius: 8,
+            offset: Offset(0, -2),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -365,27 +429,46 @@ class _InputBar extends StatelessWidget {
             child: TextField(
               controller: controller,
               focusNode: focusNode,
-              maxLines: 4, minLines: 1,
+              maxLines: 4,
+              minLines: 1,
               textInputAction: TextInputAction.newline,
-              decoration: const InputDecoration(hintText: 'Nachricht eingeben...'),
+              style: const TextStyle(
+                  color: AppColors.textPrimary, fontSize: 15),
+              decoration: InputDecoration(
+                hintText: 'Nachricht eingeben...',
+                fillColor: AppColors.surfaceSecondary,
+                filled: true,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.border, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: AppColors.accent, width: 1.5),
+                ),
+              ),
             ),
           ),
-          const SizedBox(width: 8),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            child: FilledButton(
-              onPressed: isTyping ? null : onSend,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.accent,
-                foregroundColor: Colors.black,
-                minimumSize: const Size(48, 48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: isTyping
-                  ? const SizedBox(width: 20, height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
-                  : const Icon(Icons.send_rounded, size: 20),
+          const SizedBox(width: 10),
+          FilledButton(
+            onPressed: isTyping ? null : onSend,
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.accent,
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: AppColors.accent.withOpacity(0.4),
+              minimumSize: const Size(48, 48),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
             ),
+            child: isTyping
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white))
+                : const Icon(Icons.send_rounded, size: 20),
           ),
         ],
       ),

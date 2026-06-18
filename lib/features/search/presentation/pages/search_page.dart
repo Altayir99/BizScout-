@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,19 +38,29 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     final p = context.watch<SearchProvider>();
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('BizScout Suche'),
+        title: Text('BizScout',
+            style: GoogleFonts.sourceSerif4(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            )),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: AppColors.border),
+        ),
         actions: [
           if (p.result != null)
             IconButton(
-              icon: const Icon(Icons.clear),
+              icon: const Icon(Icons.clear_rounded, size: 20),
               onPressed: () {
                 _controller.clear();
                 p.clear();
               },
             ),
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
+            icon: const Icon(Icons.settings_outlined, size: 20),
             tooltip: 'Einstellungen',
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const SettingsPage()),
@@ -61,7 +72,7 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           // Mode chips
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -74,10 +85,19 @@ class _SearchPageState extends State<SearchPage> {
                       selected: selected,
                       onSelected: (_) => p.setMode(m['key']!),
                       selectedColor: AppColors.accent,
-                      backgroundColor: AppColors.surfaceLight,
+                      backgroundColor: AppColors.surfaceSecondary,
+                      side: BorderSide(
+                        color: selected ? AppColors.accent : AppColors.border,
+                        width: 1,
+                      ),
                       labelStyle: TextStyle(
-                        color: selected ? Colors.black : AppColors.textSecondary,
-                        fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                        color: selected ? Colors.white : AppColors.textSecondary,
+                        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                        fontSize: 13,
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                   );
@@ -88,41 +108,69 @@ class _SearchPageState extends State<SearchPage> {
           // Search bar
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focus,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (_) => _search(p),
-                    decoration: InputDecoration(
-                      hintText: p.modes
-                          .firstWhere((m) => m['key'] == p.selectedMode)['hint'],
-                      prefixIcon:
-                          Icon(Icons.search_rounded, color: AppColors.textMuted),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0A000000),
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focus,
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: (_) => _search(p),
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 15,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: p.modes
+                            .firstWhere((m) => m['key'] == p.selectedMode)['hint'],
+                        prefixIcon: Icon(Icons.search_rounded,
+                            color: AppColors.textMuted, size: 20),
+                        fillColor: AppColors.surface,
+                        filled: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.border, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.accent, width: 1.5),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: p.isLoading ? null : () => _search(p),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(width: 10),
+                  FilledButton(
+                    onPressed: p.isLoading ? null : () => _search(p),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.accent,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: AppColors.accent.withOpacity(0.5),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                    child: p.isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white))
+                        : const Icon(Icons.arrow_forward_rounded, size: 20),
                   ),
-                  child: p.isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.black))
-                      : const Icon(Icons.arrow_forward_rounded),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           // Recent searches (shown when idle, no results)
@@ -178,10 +226,10 @@ class _SearchPageState extends State<SearchPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceLight,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(20),
                         border:
-                            Border.all(color: AppColors.border, width: 0.5),
+                            Border.all(color: AppColors.border, width: 1),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -212,7 +260,14 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(color: AppColors.accent),
+            SizedBox(
+              width: 32,
+              height: 32,
+              child: CircularProgressIndicator(
+                color: AppColors.accent,
+                strokeWidth: 2.5,
+              ),
+            ),
             const SizedBox(height: 16),
             Text('Suche läuft…',
                 style: TextStyle(color: AppColors.textMuted, fontSize: 14)),
@@ -227,10 +282,17 @@ class _SearchPageState extends State<SearchPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
-              const SizedBox(height: 12),
+              Container(
+                width: 56, height: 56,
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(Icons.error_outline_rounded, size: 28, color: AppColors.error),
+              ),
+              const SizedBox(height: 16),
               Text(p.error!,
-                  style: TextStyle(color: AppColors.error),
+                  style: TextStyle(color: AppColors.error, fontSize: 14),
                   textAlign: TextAlign.center),
             ],
           ),
@@ -242,10 +304,24 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.travel_explore_rounded, size: 64, color: AppColors.textMuted),
-            const SizedBox(height: 16),
-            Text('Wähle einen Modus und suche',
-                style: TextStyle(color: AppColors.textMuted)),
+            Container(
+              width: 72, height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.accentSubtle,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(Icons.travel_explore_rounded, size: 36, color: AppColors.accent),
+            ),
+            const SizedBox(height: 20),
+            Text('Marktintelligenz durchsuchen',
+                style: GoogleFonts.sourceSerif4(
+                  color: AppColors.textPrimary,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                )),
+            const SizedBox(height: 8),
+            Text('Wähle einen Modus und starte die Suche',
+                style: TextStyle(color: AppColors.textMuted, fontSize: 14)),
           ],
         ),
       );
@@ -268,17 +344,19 @@ class _SearchPageState extends State<SearchPage> {
               onPressed: p.isResearching ? null : () => p.analyze(),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.accent,
-                foregroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: AppColors.accent.withOpacity(0.5),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
               ),
               icon: p.isResearching
                   ? const SizedBox(
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.black))
+                          strokeWidth: 2, color: Colors.white))
                   : const Icon(Icons.auto_awesome_rounded, size: 18),
               label: Text(
                 p.isResearching ? 'KI analysiert…' : 'Analysiere mit KI',
@@ -312,7 +390,7 @@ class _SearchPageState extends State<SearchPage> {
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.accent,
-              side: BorderSide(color: AppColors.accent.withOpacity(0.5)),
+              side: BorderSide(color: AppColors.accent.withOpacity(0.4)),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -331,7 +409,7 @@ class _SearchPageState extends State<SearchPage> {
 
         // ── Sources ───────────────────────────────────────────────────────
         if (p.result!.sources.isNotEmpty) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
@@ -356,12 +434,12 @@ class _SearchPageState extends State<SearchPage> {
 
 MarkdownStyleSheet _mdStyle() => MarkdownStyleSheet(
       p: TextStyle(color: AppColors.textPrimary, fontSize: 15, height: 1.65),
-      h1: TextStyle(
+      h1: GoogleFonts.sourceSerif4(
           color: AppColors.textPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w700,
           height: 1.4),
-      h2: TextStyle(
+      h2: GoogleFonts.sourceSerif4(
           color: AppColors.textPrimary,
           fontSize: 17,
           fontWeight: FontWeight.w600,
@@ -379,12 +457,12 @@ MarkdownStyleSheet _mdStyle() => MarkdownStyleSheet(
           fontStyle: FontStyle.italic),
       blockquoteDecoration: BoxDecoration(
         border: Border(left: BorderSide(color: AppColors.accent, width: 3)),
-        color: AppColors.surfaceLight,
+        color: AppColors.accentSubtle,
         borderRadius: BorderRadius.circular(4),
       ),
       code: TextStyle(
           color: AppColors.accent,
-          backgroundColor: AppColors.surfaceLight,
+          backgroundColor: AppColors.surfaceSecondary,
           fontSize: 13),
     );
 
@@ -399,8 +477,15 @@ class _ResultCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.surfaceLight, width: 1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border, width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x08000000),
+            blurRadius: 16,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -413,12 +498,13 @@ class _ResultCard extends StatelessWidget {
               Text('SUCHERGEBNIS',
                   style: TextStyle(
                       color: AppColors.accent,
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.0)),
               const Spacer(),
               // Copy button
-              GestureDetector(
+              _IconAction(
+                icon: Icons.copy_rounded,
                 onTap: () {
                   HapticFeedback.lightImpact();
                   Clipboard.setData(ClipboardData(text: answer));
@@ -426,30 +512,24 @@ class _ResultCard extends StatelessWidget {
                     const SnackBar(
                       content: Text('Kopiert'),
                       duration: Duration(seconds: 1),
-                      behavior: SnackBarBehavior.floating,
                     ),
                   );
                 },
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Icon(Icons.copy_rounded, size: 16, color: AppColors.textMuted),
-                ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               // Share button
-              GestureDetector(
+              _IconAction(
+                icon: Icons.ios_share_rounded,
                 onTap: () {
                   HapticFeedback.lightImpact();
                   Share.share(answer, subject: 'BizScout Suchergebnis');
                 },
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Icon(Icons.ios_share_rounded, size: 16, color: AppColors.textMuted),
-                ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+          Container(height: 1, color: AppColors.border),
+          const SizedBox(height: 14),
           MarkdownBody(
             data: answer,
             styleSheet: _mdStyle(),
@@ -474,74 +554,95 @@ class _AnalysisCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.accent.withOpacity(0.15),
-            AppColors.accent.withOpacity(0.05),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accent.withOpacity(0.4), width: 1),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.accent.withOpacity(0.2), width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x08000000),
+            blurRadius: 16,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.auto_awesome_rounded, size: 16, color: AppColors.accent),
-              const SizedBox(width: 6),
-              Text('KI-ANALYSE',
-                  style: TextStyle(
-                      color: AppColors.accent,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.0)),
-              const Spacer(),
-              // Copy button
-              GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  Clipboard.setData(ClipboardData(text: analysis));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Analyse kopiert'),
-                      duration: Duration(seconds: 1),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Icon(Icons.copy_rounded, size: 16, color: AppColors.textMuted),
-                ),
+          // Left accent bar — academic blockquote style
+          Container(
+            width: 4,
+            decoration: BoxDecoration(
+              color: AppColors.accent,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(14),
+                bottomLeft: Radius.circular(14),
               ),
-              const SizedBox(width: 8),
-              // Share button
-              GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  Share.share(analysis, subject: 'BizScout KI-Analyse');
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Icon(Icons.ios_share_rounded, size: 16, color: AppColors.textMuted),
-                ),
-              ),
-            ],
+            ),
           ),
-          const SizedBox(height: 12),
-          MarkdownBody(
-            data: analysis,
-            styleSheet: _mdStyle(),
-            onTapLink: (_, href, __) async {
-              if (href != null) {
-                final uri = Uri.parse(href);
-                if (await canLaunchUrl(uri)) launchUrl(uri);
-              }
-            },
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 28, height: 28,
+                        decoration: BoxDecoration(
+                          color: AppColors.accentSubtle,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(Icons.auto_awesome_rounded,
+                            size: 15, color: AppColors.accent),
+                      ),
+                      const SizedBox(width: 8),
+                      Text('KI-ANALYSE',
+                          style: TextStyle(
+                              color: AppColors.accent,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.0)),
+                      const Spacer(),
+                      _IconAction(
+                        icon: Icons.copy_rounded,
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          Clipboard.setData(ClipboardData(text: analysis));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Analyse kopiert'),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 4),
+                      _IconAction(
+                        icon: Icons.ios_share_rounded,
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          Share.share(analysis, subject: 'BizScout KI-Analyse');
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Container(height: 1, color: AppColors.border),
+                  const SizedBox(height: 14),
+                  MarkdownBody(
+                    data: analysis,
+                    styleSheet: _mdStyle(),
+                    onTapLink: (_, href, __) async {
+                      if (href != null) {
+                        final uri = Uri.parse(href);
+                        if (await canLaunchUrl(uri)) launchUrl(uri);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -575,7 +676,7 @@ class _SourceTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.surfaceLight, width: 1),
+          border: Border.all(color: AppColors.border, width: 1),
         ),
         child: Row(
           children: [
@@ -583,7 +684,7 @@ class _SourceTile extends StatelessWidget {
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.15),
+                color: AppColors.accentSubtle,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Center(
@@ -605,6 +706,28 @@ class _SourceTile extends StatelessWidget {
             Icon(Icons.open_in_new_rounded, size: 14, color: AppColors.textMuted),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Subtle icon button used in card headers
+class _IconAction extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _IconAction({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 32, height: 32,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.transparent,
+        ),
+        child: Icon(icon, size: 16, color: AppColors.textMuted),
       ),
     );
   }

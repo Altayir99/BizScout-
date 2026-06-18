@@ -22,8 +22,16 @@ class LayoutPage extends StatelessWidget {
     return Scaffold(
       body: IndexedStack(index: nav.currentIndex, children: _pages),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x08000000),
+              blurRadius: 8,
+              offset: Offset(0, -2),
+            ),
+          ],
         ),
         child: BottomNavigationBar(
           currentIndex: nav.currentIndex,
@@ -36,15 +44,24 @@ class LayoutPage extends StatelessWidget {
           },
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.search_rounded),
+              icon: Padding(
+                padding: EdgeInsets.only(bottom: 2),
+                child: Icon(Icons.search_rounded),
+              ),
               label: 'Suche',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline_rounded),
+              icon: Padding(
+                padding: EdgeInsets.only(bottom: 2),
+                child: Icon(Icons.chat_bubble_outline_rounded),
+              ),
               label: 'Chat',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.history_rounded),
+              icon: Padding(
+                padding: EdgeInsets.only(bottom: 2),
+                child: Icon(Icons.history_rounded),
+              ),
               label: 'Verlauf',
             ),
           ],

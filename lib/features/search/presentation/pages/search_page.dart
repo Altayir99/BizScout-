@@ -5,11 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/services/export_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/navigation_provider.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 import '../providers/search_provider.dart';
+import '../../data/models/search_result.dart';
+import '../../data/models/research_result.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -332,7 +336,7 @@ class _SearchPageState extends State<SearchPage> {
       children: [
         // ── KI Analysis card ─────────────────────────────────────────────
         if (p.researchResult != null) ...[
-          _AnalysisCard(analysis: p.researchResult!.aiAnalysis),
+          _AnalysisCard(result: p.researchResult!, query: _controller.text.trim()),
           const SizedBox(height: 16),
         ],
 
@@ -405,7 +409,7 @@ class _SearchPageState extends State<SearchPage> {
         const SizedBox(height: 16),
 
         // ── Search result card ────────────────────────────────────────────
-        _ResultCard(answer: p.result!.answer),
+        _ResultCard(result: p.result!, query: _controller.text.trim()),
 
         // ── Sources ───────────────────────────────────────────────────────
         if (p.result!.sources.isNotEmpty) ...[
@@ -469,11 +473,13 @@ MarkdownStyleSheet _mdStyle() => MarkdownStyleSheet(
 // ── Widgets ──────────────────────────────────────────────────────────────────
 
 class _ResultCard extends StatelessWidget {
-  final String answer;
-  const _ResultCard({required this.answer});
+  final SearchResult result;
+  final String query;
+  const _ResultCard({required this.result, required this.query});
 
   @override
   Widget build(BuildContext context) {
+    final answer = result.answer;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -502,6 +508,15 @@ class _ResultCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.0)),
               const Spacer(),
+              // PDF export
+              _IconAction(
+                icon: Icons.picture_as_pdf_rounded,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  sl<ExportService>().shareSearchAsPdf(result, query);
+                },
+              ),
+              const SizedBox(width: 4),
               // Copy button
               _IconAction(
                 icon: Icons.copy_rounded,
@@ -547,11 +562,13 @@ class _ResultCard extends StatelessWidget {
 }
 
 class _AnalysisCard extends StatelessWidget {
-  final String analysis;
-  const _AnalysisCard({required this.analysis});
+  final ResearchResult result;
+  final String query;
+  const _AnalysisCard({required this.result, required this.query});
 
   @override
   Widget build(BuildContext context) {
+    final analysis = result.aiAnalysis;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -604,6 +621,15 @@ class _AnalysisCard extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                               letterSpacing: 1.0)),
                       const Spacer(),
+                      // PDF export
+                      _IconAction(
+                        icon: Icons.picture_as_pdf_rounded,
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          sl<ExportService>().shareResearchAsPdf(result, query);
+                        },
+                      ),
+                      const SizedBox(width: 4),
                       _IconAction(
                         icon: Icons.copy_rounded,
                         onTap: () {

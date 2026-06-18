@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../services/api_client.dart';
+import '../services/export_service.dart';
 import '../../features/search/data/sources/search_remote_data_source.dart';
 import '../../features/search/data/repositories/search_repository.dart';
 import '../../features/search/presentation/providers/search_provider.dart';
@@ -40,4 +41,7 @@ void setupDependencies() {
   sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSource(sl<Dio>()));
   sl.registerLazySingleton<SessionsRepository>(() => SessionsRepository(sl<SessionsRemoteDataSource>()));
   sl.registerFactory<SessionsProvider>(() => SessionsProvider(sl<SessionsRepository>()));
+
+  // Export
+  sl.registerLazySingleton<ExportService>(() => ExportService());
 }

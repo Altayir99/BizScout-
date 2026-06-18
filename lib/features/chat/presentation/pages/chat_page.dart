@@ -4,6 +4,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/services/export_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/chat_message.dart';
 import '../providers/chat_provider.dart';
@@ -86,6 +88,18 @@ class _ChatPageState extends State<ChatPage> {
           child: Container(height: 1, color: AppColors.border),
         ),
         actions: [
+          if (p.messages.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.picture_as_pdf_rounded, size: 21),
+              tooltip: 'Als PDF exportieren',
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                sl<ExportService>().shareChatAsPdf(
+                  p.messages,
+                  p.currentSessionId,
+                );
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.add_circle_outline_rounded, size: 22),
             tooltip: 'Neuer Chat',

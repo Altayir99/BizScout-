@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/navigation_provider.dart';
@@ -54,7 +56,6 @@ class _SessionsPageState extends State<SessionsPage>
       ),
       child: Row(
         children: [
-          // Icon + Title
           Container(
             width: 36,
             height: 36,
@@ -325,7 +326,7 @@ class _SessionCard extends StatelessWidget {
                     color: AppColors.gold, size: 20),
               ),
               const SizedBox(width: 12),
-              // Middle: title + date
+              // Middle: title + metadata
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,12 +342,35 @@ class _SessionCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      _formatDate(session.updatedAt),
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 12,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          _formatDate(session.updatedAt),
+                          style: const TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 12,
+                          ),
+                        ),
+                        if (session.messageCount > 0) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.gold.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              '${session.messageCount} Msg',
+                              style: const TextStyle(
+                                color: AppColors.gold,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ],
                 ),
@@ -420,23 +444,24 @@ class _SessionDetailSheet extends StatelessWidget {
                       session.title,
                       style: const TextStyle(
                         color: AppColors.textPrimary,
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const SizedBox(width: 12),
                   // Resume in Chat button
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
-                      // Resume session in chat
                       context.read<ChatProvider>().resumeSession(
                             session.id,
                             context
                                 .read<SessionsProvider>()
                                 .sessionMessages,
                           );
-                      // Switch to Chat tab
                       context.read<NavigationProvider>().goToChat();
                     },
                     child: Container(
@@ -482,7 +507,7 @@ class _SessionDetailSheet extends StatelessWidget {
                     controller: controller,
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                     itemCount: prov.sessionMessages.length,
-                    itemBuilder: (_, i) {
+                    itemBuilder: (ctx, i) {
                       final msg = prov.sessionMessages[i];
                       final isUser = msg.role == 'user';
                       return Padding(
@@ -491,36 +516,76 @@ class _SessionDetailSheet extends StatelessWidget {
                           alignment: isUser
                               ? Alignment.centerRight
                               : Alignment.centerLeft,
-                          child: Container(
-                            constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width * 0.78),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: isUser
-                                  ? AppColors.gold.withOpacity(0.15)
-                                  : AppColors.surfaceLight,
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(14),
-                                topRight: const Radius.circular(14),
-                                bottomLeft: Radius.circular(isUser ? 14 : 4),
-                                bottomRight: Radius.circular(isUser ? 4 : 14),
-                              ),
-                              border: isUser
-                                  ? Border.all(
-                                      color: AppColors.gold.withOpacity(0.3))
-                                  : null,
-                            ),
-                            child: Text(
-                              msg.content,
-                              style: TextStyle(
+                          child: GestureDetector(
+                            onLongPress: () {
+                              HapticFeedback.mediumImpact();
+                              Clipboard.setData(
+                                  ClipboardData(text: msg.content));
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Nachricht kopiert'),
+                                  duration: Duration(seconds: 1),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            },
+                            child: Container(
+                              constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(ctx).size.width * 0.82),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 10),
+                              decoration: BoxDecoration(
                                 color: isUser
-                                    ? AppColors.gold
-                                    : AppColors.textPrimary,
-                                fontSize: 14,
-                                height: 1.5,
+                                    ? AppColors.gold.withOpacity(0.15)
+                                    : AppColors.surfaceLight,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: const Radius.circular(14),
+                                  topRight: const Radius.circular(14),
+                                  bottomLeft:
+                                      Radius.circular(isUser ? 14 : 4),
+                                  bottomRight:
+                                      Radius.circular(isUser ? 4 : 14),
+                                ),
+                                border: isUser
+                                    ? Border.all(
+                                        color:
+                                            AppColors.gold.withOpacity(0.3))
+                                    : null,
                               ),
+                              child: isUser
+                                  ? Text(
+                                      msg.content,
+                                      style: const TextStyle(
+                                        color: AppColors.gold,
+                                        fontSize: 14,
+                                        height: 1.5,
+                                      ),
+                                    )
+                                  : MarkdownBody(
+                                      data: msg.content,
+                                      styleSheet: MarkdownStyleSheet(
+                                        p: const TextStyle(
+                                            color: AppColors.textPrimary,
+                                            fontSize: 14,
+                                            height: 1.55),
+                                        strong: const TextStyle(
+                                            color: AppColors.textPrimary,
+                                            fontWeight: FontWeight.w700),
+                                        h3: TextStyle(
+                                            color: AppColors.gold,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600),
+                                        listBullet: TextStyle(
+                                            color: AppColors.gold,
+                                            fontSize: 14),
+                                        code: TextStyle(
+                                            color: AppColors.gold,
+                                            backgroundColor:
+                                                AppColors.surfaceLight,
+                                            fontSize: 12),
+                                      ),
+                                    ),
                             ),
                           ),
                         ),

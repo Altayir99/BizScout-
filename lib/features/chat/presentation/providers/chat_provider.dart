@@ -53,10 +53,32 @@ class ChatProvider extends ChangeNotifier {
   /// Called from SearchPage — seeds a new chat with search context and sends first message.
   Future<void> seedFromSearch(String query, String searchSummary) async {
     newChat();
-    final contextMessage =
+
+    // Short UI-facing message (what the user sees in the chat bubble)
+    final displayMessage = '🔍 Analysiere Suchergebnisse zu: "$query"';
+
+    // Full context sent to Claude (invisible in UI, stored in DB)
+    final apiMessage =
         'Ich habe gerade nach folgendem gesucht: "$query"\n\n'
-        'Hier sind die aktuellen Ergebnisse:\n\n$searchSummary\n\n'
-        'Bitte analysiere diese Informationen für mich und gib mir konkrete Handlungsempfehlungen.';
-    await send(contextMessage);
+        'Hier sind die aktuellen Live-Ergebnisse:\n\n$searchSummary\n\n'
+        'Bitte analysiere diese Informationen aus Sicht eines Unternehmensberaters '
+        'für Gastronomie und Zeitarbeit in Berlin. Gib mir konkrete Handlungsempfehlungen.';
+
+    // Show short display message in UI immediately
+    messages.add(ChatMessage(role: 'user', content: displayMessage));
+    isTyping = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      final response = await _repo.sendMessage(apiMessage, currentSessionId);
+      currentSessionId = response.sessionId;
+      messages.add(ChatMessage(role: 'assistant', content: response.answer));
+    } catch (e) {
+      error = 'Fehler beim Senden. Bitte versuche es erneut.';
+    } finally {
+      isTyping = false;
+      notifyListeners();
+    }
   }
 }

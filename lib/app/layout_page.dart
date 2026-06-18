@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../features/search/presentation/pages/search_page.dart';
 import '../features/chat/presentation/pages/chat_page.dart';
 import '../features/sessions/presentation/pages/sessions_page.dart';
+import '../features/sessions/presentation/providers/sessions_provider.dart';
 import '../core/theme/app_colors.dart';
 import '../core/providers/navigation_provider.dart';
 
@@ -26,7 +27,13 @@ class LayoutPage extends StatelessWidget {
         ),
         child: BottomNavigationBar(
           currentIndex: nav.currentIndex,
-          onTap: (i) => context.read<NavigationProvider>().goTo(i),
+          onTap: (i) {
+            context.read<NavigationProvider>().goTo(i);
+            // Auto-refresh sessions whenever the Verlauf tab is tapped
+            if (i == 2) {
+              context.read<SessionsProvider>().loadSessions();
+            }
+          },
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.search_rounded),

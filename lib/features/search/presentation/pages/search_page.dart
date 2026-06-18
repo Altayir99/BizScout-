@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/navigation_provider.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
+import '../../../settings/presentation/pages/settings_page.dart';
 import '../providers/search_provider.dart';
 
 class SearchPage extends StatefulWidget {
@@ -47,6 +48,13 @@ class _SearchPageState extends State<SearchPage> {
                 p.clear();
               },
             ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Einstellungen',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SettingsPage()),
+            ),
+          ),
         ],
       ),
       body: Column(
@@ -491,6 +499,37 @@ class _AnalysisCard extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.0)),
+              const Spacer(),
+              // Copy button
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Clipboard.setData(ClipboardData(text: analysis));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Analyse kopiert'),
+                      duration: Duration(seconds: 1),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Icon(Icons.copy_rounded, size: 16, color: AppColors.textMuted),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Share button
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Share.share(analysis, subject: 'BizScout KI-Analyse');
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Icon(Icons.ios_share_rounded, size: 16, color: AppColors.textMuted),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),

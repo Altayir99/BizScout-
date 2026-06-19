@@ -28,14 +28,14 @@ class SearchProvider extends ChangeNotifier {
   Map<String, int> modeCounts = {};
 
   final modes = [
-    {'key': 'restaurants', 'label': '🍽️ Gastronomie',   'hint': 'z.B. Neue Restaurants Berlin 2025'},
-    {'key': 'events',      'label': '📅 Events',          'hint': 'z.B. Großveranstaltungen Berlin Juni'},
-    {'key': 'hotels',      'label': '🏨 Hotels',          'hint': 'z.B. Luxushotels Berlin Neueröffnungen'},
-    {'key': 'messen',      'label': '🎪 Messen & Kongresse','hint': 'z.B. Messen Berlin 2025 Personalbedarf'},
-    {'key': 'zeitarbeit',  'label': '👔 Zeitarbeit',      'hint': 'z.B. Zeitarbeitsmarkt Berlin Gastronomie'},
-    {'key': 'akquise',     'label': '💼 B2B Akquise',     'hint': 'z.B. Catering Auftraggeber Berlin'},
-    {'key': 'markt',       'label': '📊 Marktanalyse',    'hint': 'z.B. Gastronomie Trends Berlin 2025'},
-    {'key': 'general',     'label': '🔍 Allgemein',       'hint': 'Beliebige Business-Anfrage...'},
+    {'key': 'general',   'label': '🔍 Suche',         'hint': 'Alles suchen...'},
+    {'key': 'markt',     'label': '📊 Marktanalyse',   'hint': 'z.B. KI Markt Deutschland 2025'},
+    {'key': 'firmen',    'label': '🏢 Firmen',         'hint': 'z.B. Top Startups Berlin'},
+    {'key': 'finanzen',  'label': '💰 Finanzen',       'hint': 'z.B. Umsatz Apple Q2 2025'},
+    {'key': 'tech',      'label': '💻 Tech & Tools',   'hint': 'z.B. Beste CRM Software'},
+    {'key': 'recht',     'label': '⚖️ Recht & Gesetz', 'hint': 'z.B. DSGVO Änderungen 2025'},
+    {'key': 'trends',    'label': '📈 Trends',         'hint': 'z.B. E-Commerce Trends Europa'},
+    {'key': 'akquise',   'label': '💼 B2B & Sales',    'hint': 'z.B. Lead-Generierung Strategien'},
   ];
 
 

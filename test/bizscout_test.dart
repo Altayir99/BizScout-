@@ -297,8 +297,8 @@ void main() {
 
   group('Search Modes', () {
     final expectedModes = [
-      'restaurants', 'events', 'hotels', 'messen',
-      'zeitarbeit', 'akquise', 'markt', 'general',
+      'general', 'markt', 'firmen', 'finanzen',
+      'tech', 'recht', 'trends', 'akquise',
     ];
 
     test('exactly 8 modes defined', () {

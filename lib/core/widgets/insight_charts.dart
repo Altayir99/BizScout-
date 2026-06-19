@@ -147,25 +147,25 @@ class ModeUsagePieChart extends StatelessWidget {
   const ModeUsagePieChart({super.key, required this.modeCounts});
 
   static const _modeColors = {
-    'restaurants': Color(0xFFE67E22),
-    'events': Color(0xFF2ECC71),
-    'hotels': Color(0xFF3498DB),
-    'messen': Color(0xFF9B59B6),
-    'zeitarbeit': Color(0xFF1ABC9C),
-    'akquise': Color(0xFFE74C3C),
+    'general': Color(0xFF3498DB),
     'markt': Color(0xFFF39C12),
-    'general': Color(0xFF95A5A6),
+    'firmen': Color(0xFF2ECC71),
+    'finanzen': Color(0xFF9B59B6),
+    'tech': Color(0xFFE67E22),
+    'recht': Color(0xFF1ABC9C),
+    'trends': Color(0xFFE74C3C),
+    'akquise': Color(0xFF34495E),
   };
 
   static const _modeLabels = {
-    'restaurants': 'Gastronomie',
-    'events': 'Events',
-    'hotels': 'Hotels',
-    'messen': 'Messen',
-    'zeitarbeit': 'Zeitarbeit',
-    'akquise': 'B2B Akquise',
+    'general': 'Suche',
     'markt': 'Marktanalyse',
-    'general': 'Allgemein',
+    'firmen': 'Firmen',
+    'finanzen': 'Finanzen',
+    'tech': 'Tech & Tools',
+    'recht': 'Recht & Gesetz',
+    'trends': 'Trends',
+    'akquise': 'B2B & Sales',
   };
 
   @override
